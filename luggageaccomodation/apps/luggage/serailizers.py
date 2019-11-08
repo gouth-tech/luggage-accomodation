@@ -1,4 +1,4 @@
-from .models import Luggage, LuggageType, Booking
+from .models import Luggage, Booking
 from rest_framework import serializers
 
 
@@ -15,7 +15,7 @@ class LuggageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Luggage
-        fields = ('id', 'owner_name', 'type', 'space_alloted', 'total_amount',)
+        fields = ('id', 'type', 'space_alloted', 'total_amount',)
 
 
 class LuggageUpdateSerializer(serializers.ModelSerializer):
@@ -27,18 +27,18 @@ class LuggageUpdateSerializer(serializers.ModelSerializer):
 
 class BookingSerializer(serializers.ModelSerializer):
     total_amount = serializers.SerializerMethodField()
-    owner_name = serializers.SerializerMethodField()
+    total_slots = serializers.SerializerMethodField()
 
     def validate(self, attrs):
         if not attrs.get('owner_id') == []:
             self.owner = attrs.get('owner_id')
         return attrs
 
-    def get_owner_name(self, obj):
-        return self.owner.owner_name
+    def get_total_slots(self, obj):
+        luggage = Luggage.objects.get(id=self.owner.id).space_alloted
+        return luggage
 
     def get_total_amount(self, obj):
-        print(obj)
         luggage = Luggage.objects.get(id=self.owner.id)
         type = luggage.type.all()
         total = 0
@@ -48,5 +48,5 @@ class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ('id', 'customer_name', 'owner_id', 'total_amount', 'owner_name')
+        fields = ('id', 'owner_id', 'total_slots', 'total_amount',)
 

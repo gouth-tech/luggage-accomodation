@@ -5,6 +5,7 @@ from django.contrib import admin
 api_urls = [
 
     path('', include('apps.luggage.urls')),
+    path('', include('apps.accounts.urls')),
 
 ]
 
